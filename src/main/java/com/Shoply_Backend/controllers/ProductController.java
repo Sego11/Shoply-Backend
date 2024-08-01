@@ -2,6 +2,7 @@ package com.Shoply_Backend.controllers;
 
 import com.Shoply_Backend.entities.Product;
 import com.Shoply_Backend.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +19,16 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product){
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid Product product){
          Product createdProduct =  productService.createProduct(product);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @GetMapping
-    public List<Product> getProducts(){
-        return productService.findAll();
+    public ResponseEntity<List<Product>> getProducts(){
+        List<Product> products= productService.findAll();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping(path = "/{id}")

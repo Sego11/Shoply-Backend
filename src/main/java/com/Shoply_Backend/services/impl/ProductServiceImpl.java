@@ -1,10 +1,11 @@
 package com.Shoply_Backend.services.impl;
 
 import com.Shoply_Backend.entities.Product;
+import com.Shoply_Backend.exceptions.BadRequestException;
+import com.Shoply_Backend.exceptions.ResourceNotFoundException;
 import com.Shoply_Backend.repositories.ProductRepository;
 import com.Shoply_Backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -12,7 +13,6 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -36,22 +36,33 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findById(Long id) {
-        return productRepository.findById(id).orElseThrow();
+        return productRepository.findById(id)
+                                .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
+
     }
 
     @Override
     public void delete(Long id) {
-        Product foundProduct = productRepository.findById(id).orElseThrow(null);
+        Product foundProduct = productRepository
+                        .findById(id)
+                        .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
         productRepository.delete(foundProduct);
     }
 
     @Override
     public Product update(Long id, Map<String, Object> fields) {
-        Product foundProduct = productRepository.findById(id).orElseThrow(null);
+        Product foundProduct = productRepository
+                            .findById(id)
+                            .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
+
+        if (fields.isEmpty())
+            throw new BadRequestException("No fields provided for update");
 
         fields.forEach((key,value)->{
            Field field =  ReflectionUtils.findField(Product.class,key);
-            assert field != null;
+            if (field == null)
+                throw new BadRequestException("Invalid field: " + key);
+
             field.setAccessible(true);
             ReflectionUtils.setField(field,foundProduct,value);
         });
