@@ -1,6 +1,7 @@
 package com.Shoply_Backend.controllers;
 
-import com.Shoply_Backend.entities.Product;
+import com.Shoply_Backend.domain.dto.ProductDTO;
+import com.Shoply_Backend.domain.entities.ProductEntity;
 import com.Shoply_Backend.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,27 +20,27 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid Product product){
-         Product createdProduct =  productService.createProduct(product);
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid ProductDTO productEntity){
+         ProductDTO createdProduct =  productService.createProduct(productEntity);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getProducts(){
-        List<Product> products= productService.findAll();
+    public ResponseEntity<List<ProductDTO>> getProducts(){
+        List<ProductDTO> products = productService.findAll();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable Long id){
-       Product foundProduct =  productService.findById(id);
-       return ResponseEntity.ok(foundProduct);
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable Long id){
+       ProductDTO foundProductEntity =  productService.findById(id);
+       return ResponseEntity.ok(foundProductEntity);
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Map<String, Object> fields){
-        Product updatedProduct = productService.update(id,fields);
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody Map<String, Object> fields){
+        ProductDTO updatedProduct = productService.update(id,fields);
         return ResponseEntity.ok(updatedProduct);
     }
 

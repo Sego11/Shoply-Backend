@@ -1,6 +1,6 @@
 package com.Shoply_Backend.exceptions;
 
-import com.Shoply_Backend.entities.ExceptionResponse;
+import com.Shoply_Backend.domain.entities.ExceptionResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;

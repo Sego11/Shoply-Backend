@@ -1,4 +1,4 @@
-package com.Shoply_Backend.entities;
+package com.Shoply_Backend.domain.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

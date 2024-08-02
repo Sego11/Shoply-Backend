@@ -1,8 +1,10 @@
 package com.Shoply_Backend.services.impl;
 
-import com.Shoply_Backend.entities.Product;
+import com.Shoply_Backend.domain.dto.ProductDTO;
+import com.Shoply_Backend.domain.entities.ProductEntity;
 import com.Shoply_Backend.exceptions.BadRequestException;
 import com.Shoply_Backend.exceptions.ResourceNotFoundException;
+import com.Shoply_Backend.mappers.Mapper;
 import com.Shoply_Backend.repositories.ProductRepository;
 import com.Shoply_Backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -20,38 +23,46 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private Mapper<ProductEntity,ProductDTO> productMapper;
+
     @Override
-    public Product createProduct(Product product) {
-        product.setCreatedAt(LocalDateTime.now());
-        product.setUpdatedAt(LocalDateTime.now());
-        return productRepository.save(product);
+    public ProductDTO createProduct(ProductDTO productDTO) {
+        ProductEntity productEntity = productMapper.mapFrom(productDTO);
+        productEntity.setCreatedAt(LocalDateTime.now());
+        productEntity.setUpdatedAt(LocalDateTime.now());
+        ProductEntity savedProductEntity = productRepository.save(productEntity);
+        return productMapper.mapTo(savedProductEntity);
     }
 
     @Override
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public List<ProductDTO> findAll() {
+        return productRepository.findAll()
+                .stream()
+                .map(productMapper::mapTo)
+                .collect(Collectors.toList());
     }
 
 
-
     @Override
-    public Product findById(Long id) {
-        return productRepository.findById(id)
-                                .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
+    public ProductDTO findById(Long id) {
+        ProductEntity productEntity =  productRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
+        return productMapper.mapTo(productEntity);
 
     }
 
     @Override
     public void delete(Long id) {
-        Product foundProduct = productRepository
+        ProductEntity foundProductEntity = productRepository
                         .findById(id)
                         .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
-        productRepository.delete(foundProduct);
+        productRepository.delete(foundProductEntity);
     }
 
     @Override
-    public Product update(Long id, Map<String, Object> fields) {
-        Product foundProduct = productRepository
+    public ProductDTO update(Long id, Map<String, Object> fields) {
+        ProductEntity foundProductEntity = productRepository
                             .findById(id)
                             .orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
 
@@ -59,17 +70,17 @@ public class ProductServiceImpl implements ProductService {
             throw new BadRequestException("No fields provided for update");
 
         fields.forEach((key,value)->{
-           Field field =  ReflectionUtils.findField(Product.class,key);
+           Field field =  ReflectionUtils.findField(ProductEntity.class,key);
             if (field == null)
                 throw new BadRequestException("Invalid field: " + key);
 
             field.setAccessible(true);
-            ReflectionUtils.setField(field,foundProduct,value);
+            ReflectionUtils.setField(field, foundProductEntity,value);
         });
 
-        foundProduct.setUpdatedAt(LocalDateTime.now());
-
-        return productRepository.save(foundProduct);
+        foundProductEntity.setUpdatedAt(LocalDateTime.now());
+        ProductEntity updatedProductEntity = productRepository.save(foundProductEntity);
+        return productMapper.mapTo(updatedProductEntity);
     }
 
 }
