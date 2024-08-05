@@ -4,11 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+.env
 # Ignore application.properties
-application.properties
+#application.properties
 
 # Ignore all .properties files in the config directory
-/config/*.properties
+#/config/*.properties
 
 ### STS ###
 .apt_generated
