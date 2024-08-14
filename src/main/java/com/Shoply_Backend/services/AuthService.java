@@ -1,10 +1,10 @@
 package com.Shoply_Backend.services;
 import com.Shoply_Backend.domain.dto.auth.AuthRequest;
+import com.Shoply_Backend.domain.dto.auth.AuthResponse;
 import com.Shoply_Backend.domain.dto.auth.SignUpRequest;
 import com.Shoply_Backend.domain.entities.User;
 import com.Shoply_Backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,9 +25,10 @@ public class AuthService{
 
     public void signup(SignUpRequest request){
         User user = User.builder()
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .username(request.getUsername())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -35,20 +36,19 @@ public class AuthService{
     }
 
 
-    public String signIn(AuthRequest request){
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                request.getEmail(),
-//                request.getPassword()
-//        )
-//        );
+    public AuthResponse signIn(AuthRequest request){
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                request.getEmail(),
+                request.getPassword()
+        )
+        );
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new UsernameNotFoundException("User not found"));
-
-        if(passwordEncoder.matches(request.getPassword(), user.getPassword()))
-            return jwtService.generateToken(user);
-        else
-            throw new IllegalArgumentException("Invalid credentials");
+        var jwtToken = jwtService.generateToken(user);
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 
 }
