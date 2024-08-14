@@ -4,9 +4,11 @@ import com.Shoply_Backend.domain.dto.auth.AuthResponse;
 import com.Shoply_Backend.domain.dto.auth.SignUpRequest;
 import com.Shoply_Backend.domain.entities.User;
 import com.Shoply_Backend.repositories.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class AuthService{
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
 
 
     public void signup(SignUpRequest request){
@@ -49,6 +52,12 @@ public class AuthService{
         return AuthResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    public boolean validateToken(String token) {
+        String username = jwtService.extractUsername(token);
+        var user = userDetailsService.loadUserByUsername(username);
+        return jwtService.isTokenValid(token, user);
     }
 
 }
