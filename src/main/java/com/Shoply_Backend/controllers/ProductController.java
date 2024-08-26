@@ -20,8 +20,8 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid ProductDTO productEntity){
-         ProductDTO createdProduct =  productService.createProduct(productEntity);
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid ProductDTO productDTO){
+         ProductDTO createdProduct =  productService.createProduct(productDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }

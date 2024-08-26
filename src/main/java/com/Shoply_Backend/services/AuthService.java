@@ -4,7 +4,6 @@ import com.Shoply_Backend.domain.dto.auth.AuthResponse;
 import com.Shoply_Backend.domain.dto.auth.SignUpRequest;
 import com.Shoply_Backend.domain.entities.User;
 import com.Shoply_Backend.repositories.UserRepository;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
