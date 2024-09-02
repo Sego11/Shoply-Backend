@@ -19,6 +19,9 @@ public class CartItemDTO {
     @NotNull(message = "Product ID cannot be null")
     private Long productId;
 
+    private String name;
+    private String productName;
+
     @Min(value = 0, message = "Quantity must be zero or positive")
     private Integer quantity;
 

@@ -25,15 +25,15 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private final Mapper<CartItemEntity,CartItemDTO> mapper;
+    private final Mapper<CartItemEntity, CartItemDTO> mapper;
 
     @Override
     public CartItemDTO addCartItem(CartItemDTO cartItemDTO) {
         var user = userRepository.findById(cartItemDTO.getUserId())
-                .orElseThrow(()-> new ResourceNotFoundException("User not found with id: " + cartItemDTO.getUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + cartItemDTO.getUserId()));
 
         var product = productRepository.findById(cartItemDTO.getProductId())
-                .orElseThrow(()->
+                .orElseThrow(() ->
                         new ResourceNotFoundException("Product not found with id: " + cartItemDTO.getProductId()));
 
         var cartItemEntity = CartItemEntity.builder()
@@ -58,33 +58,33 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public CartItemDTO findById(Long id) {
         var foundcartItemEntity = cartItemRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("CartItem not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem not found with id: " + id));
         return mapper.mapTo(foundcartItemEntity);
     }
 
     @Override
     public void delete(Long id) {
         var foundcartItemEntity = cartItemRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("CartItem not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem not found with id: " + id));
         cartItemRepository.delete(foundcartItemEntity);
     }
 
     @Override
     public CartItemDTO update(Long id, Map<String, Object> fields) {
         var foundcartItemEntity = cartItemRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("CartItem not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem not found with id: " + id));
 
         if (fields.isEmpty())
             throw new BadRequestException("No fields provided for update");
 
-        fields.forEach((key,value)-> {
-            var field = ReflectionUtils.findField(CartItemEntity.class,key);
+        fields.forEach((key, value) -> {
+            var field = ReflectionUtils.findField(CartItemEntity.class, key);
 
-            if(field == null)
+            if (field == null)
                 throw new BadRequestException("Invalid field: " + key);
 
             field.setAccessible(true);
-            ReflectionUtils.setField(field,foundcartItemEntity,value);
+            ReflectionUtils.setField(field, foundcartItemEntity, value);
         });
 
         foundcartItemEntity.setUpdatedAt(LocalDateTime.now());

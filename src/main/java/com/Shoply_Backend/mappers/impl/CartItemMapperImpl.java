@@ -12,13 +12,17 @@ import org.springframework.stereotype.Component;
 public class CartItemMapperImpl implements Mapper<CartItemEntity, CartItemDTO> {
 
     private final ModelMapper mapper;
+
     @Override
     public CartItemDTO mapTo(CartItemEntity cartItemEntity) {
-        return mapper.map(cartItemEntity,CartItemDTO.class);
+        var cartItemDTO = mapper.map(cartItemEntity, CartItemDTO.class);
+        cartItemDTO.setName(cartItemEntity.getUser().getFirstname() + " " + cartItemEntity.getUser().getLastname());
+        cartItemDTO.setProductName(cartItemEntity.getProductEntity().getName());
+        return cartItemDTO;
     }
 
     @Override
     public CartItemEntity mapFrom(CartItemDTO cartItemDTO) {
-        return mapper.map(cartItemDTO,CartItemEntity.class);
+        return mapper.map(cartItemDTO, CartItemEntity.class);
     }
 }
