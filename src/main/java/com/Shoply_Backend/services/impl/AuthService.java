@@ -1,4 +1,4 @@
-package com.Shoply_Backend.services;
+package com.Shoply_Backend.services.impl;
 import com.Shoply_Backend.domain.dto.auth.AuthRequest;
 import com.Shoply_Backend.domain.dto.auth.AuthResponse;
 import com.Shoply_Backend.domain.dto.auth.SignUpRequest;

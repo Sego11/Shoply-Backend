@@ -1,4 +1,4 @@
-package com.Shoply_Backend.services;
+package com.Shoply_Backend.services.impl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

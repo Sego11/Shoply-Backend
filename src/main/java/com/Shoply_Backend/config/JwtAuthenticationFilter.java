@@ -1,6 +1,6 @@
 package com.Shoply_Backend.config;
 
-import com.Shoply_Backend.services.JwtService;
+import com.Shoply_Backend.services.impl.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
