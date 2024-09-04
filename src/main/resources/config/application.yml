@@ -10,10 +10,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
-#jwt:
-#  secret: ${jwt.secret}
-#  expiration: ${jwt.expiration}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 logging:
   level:
