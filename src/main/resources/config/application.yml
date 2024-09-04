@@ -11,9 +11,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
-jwt:
-  secret: ${jwt.secret}
-  expiration: ${jwt.expiration}
+#jwt:
+#  secret: ${jwt.secret}
+#  expiration: ${jwt.expiration}
 
 logging:
   level:
