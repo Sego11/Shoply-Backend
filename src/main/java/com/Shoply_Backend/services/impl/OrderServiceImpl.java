@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,10 +28,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createOrder(Long userId) {
         var user = userRepository.findById(userId)
-                .orElseThrow(()-> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         var cartItems = cartItemRepository.findByUserId(userId);
-        if(cartItems.isEmpty())
+        if (cartItems.isEmpty())
             throw new ResourceNotFoundException("No Items in the cart for user with id: " + userId);
 
         var orderItems = cartItems.stream().map(cartItem -> OrderItem.builder()
@@ -57,5 +59,43 @@ public class OrderServiceImpl implements OrderService {
         cartItemRepository.deleteAll(cartItems);
 
         return mapper.mapTo(savedOrder);
+    }
+
+    @Override
+    public List<OrderDTO> getAllUserOrders(Long userId) {
+        var userOrders = orderRepository.findOrdersByUserId(userId);
+        if (userOrders.isEmpty())
+            throw new ResourceNotFoundException("No orders found for user with id: " + userId);
+
+        return userOrders.stream()
+                .map(mapper::mapTo)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrderDTO> getAllOrders() {
+        return orderRepository.findAll()
+                .stream()
+                .map(mapper::mapTo)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDTO getOrder(Long orderId) {
+        var foundOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found for id: " + orderId));
+        return mapper.mapTo(foundOrder);
+    }
+
+    @Override
+    public OrderDTO updateOrderStatus(Long orderId, String status) {
+        var foundOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found for id: " + orderId));
+
+        foundOrder.setStatus(status);
+        foundOrder.setUpdatedAt(LocalDateTime.now());
+
+        var updatedOrder = orderRepository.save(foundOrder);
+        return mapper.mapTo(updatedOrder);
     }
 }
