@@ -18,7 +18,8 @@ spring:
 
 logging:
   level:
-    org:
-      springframework:
-        security: DEBUG
-        web: DEBUG
+    root: INFO
+    com.Shoply_Backend: DEBUG
+    org.springframework: WARN
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

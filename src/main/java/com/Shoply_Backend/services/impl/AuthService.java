@@ -5,6 +5,7 @@ import com.Shoply_Backend.domain.dto.auth.SignUpRequest;
 import com.Shoply_Backend.domain.entities.User;
 import com.Shoply_Backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,9 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService{
 
     private final UserRepository userRepository;
@@ -47,7 +51,12 @@ public class AuthService{
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new UsernameNotFoundException("User not found"));
-        var jwtToken = jwtService.generateToken(user);
+        log.debug("user from db {} ", user);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id",user.getId());
+        extraClaims.put("firstname",user.getFirstname());
+        extraClaims.put("lastname",user.getLastname());
+        var jwtToken = jwtService.generateToken(extraClaims,user);
         return AuthResponse.builder()
                 .token(jwtToken)
                 .build();
