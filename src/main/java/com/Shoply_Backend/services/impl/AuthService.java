@@ -51,7 +51,6 @@ public class AuthService{
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new UsernameNotFoundException("User not found"));
-        log.debug("user from db {} ", user);
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("id",user.getId());
         extraClaims.put("firstname",user.getFirstname());
